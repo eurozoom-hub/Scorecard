@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eurozoom — SME Growth Scorecard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black: #0a0a0a; --panel: #171719; --panel2: #1e1e21;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+  --text: #f0ece3; --text2: #8a8680; --text3: #4a4845;
+  --accent: #d4472a; --accent2: #e8674e; --accent-dim: rgba(212,71,42,0.1); --accent-border: rgba(212,71,42,0.3);
+  --green: #3a9a6e; --amber: #c9943a;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--black); color: var(--text); font-family: 'Outfit', sans-serif; font-weight: 300; line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; }
+
+.wrapper { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* HEADER */
+.header { padding: 52px 0 40px; text-align: center; border-bottom: 1px solid var(--border); margin-bottom: 44px; animation: fadeUp 0.5s ease 0.1s both; }
+.header-eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+.header-title { font-family: 'Playfair Display', serif; font-size: clamp(34px, 6vw, 54px); font-weight: 900; line-height: 1; letter-spacing: -0.02em; margin-bottom: 16px; }
+.header-title em { font-style: italic; color: var(--accent); }
+.header-sub { font-size: 14px; color: var(--text2); max-width: 460px; margin: 0 auto 24px; line-height: 1.65; }
+.header-meta { display: inline-flex; gap: 20px; font-size: 12px; color: var(--text3); }
+.header-meta span { display: flex; align-items: center; gap: 6px; }
+.header-meta span::before { content: '·'; color: var(--accent); }
+.header-meta span:first-child::before { display: none; }
+
+/* PROGRESS */
+.progress-wrap { position: sticky; top: 0; z-index: 50; background: linear-gradient(to bottom, rgba(10,10,10,0.98) 70%, transparent); padding: 14px 0 8px; margin-bottom: 28px; }
+.progress-track { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+.progress-label { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text3); letter-spacing: 0.05em; }
+.progress-pct { color: var(--accent); font-weight: 500; }
+
+/* SECTION */
+.form-section { margin-bottom: 48px; animation: fadeUp 0.5s ease 0.2s both; }
+.section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.section-name { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+
+/* QUESTION */
+.question { background: var(--panel); border: 1px solid var(--border); padding: 24px 28px; margin-bottom: 10px; transition: border-color 0.2s; }
+.question.answered { border-color: rgba(212,71,42,0.22); }
+.q-header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+.q-num { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; min-width: 28px; padding-top: 1px; }
+.q-text { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.5; flex: 1; }
+
+/* SCALE */
+.scale { display: flex; gap: 5px; flex-wrap: wrap; }
+.scale-btn { width: 40px; height: 40px; border: 1px solid var(--border2); background: transparent; color: var(--text2); font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; border-radius: 2px; flex-shrink: 0; }
+.scale-btn:hover { border-color: var(--accent-border); color: var(--text); background: var(--accent-dim); }
+.scale-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+.scale-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--text3); letter-spacing: 0.03em; }
+
+/* CONTACT */
+.contact-section { background: var(--panel); border: 1px solid var(--border); padding: 32px 28px; margin-bottom: 10px; animation: fadeUp 0.5s ease 0.25s both; }
+.contact-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+.contact-sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; line-height: 1.6; }
+.field { margin-bottom: 14px; }
+.field-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text3); margin-bottom: 7px; display: block; }
+.field input { width: 100%; background: var(--panel2); border: 1px solid var(--border2); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 300; padding: 14px 16px; outline: none; transition: border-color 0.2s; -webkit-appearance: none; border-radius: 0; }
+.field input:focus { border-color: var(--accent); }
+.field input::placeholder { color: var(--text3); }
+
+/* SUBMIT */
+.submit-btn { width: 100%; margin-top: 24px; background: var(--accent); border: none; color: #fff; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 18px 32px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.submit-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+.submit-note { text-align: center; font-size: 11px; color: var(--text3); margin-top: 12px; line-height: 1.6; }
+
+/* RESULTS */
+.results { display: none; padding: 48px 0; text-align: center; }
+.results.show { display: block; animation: fadeUp 0.6s ease forwards; }
+.form-body.hidden { display: none; }
+
+.score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 32px; }
+.score-ring { width: 160px; height: 160px; transform: rotate(-90deg); }
+.score-ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+.score-ring-fill { fill: none; stroke: var(--accent); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 1.2s ease; }
+.score-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.score-val { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 900; line-height: 1; }
+.score-total { font-size: 11px; color: var(--text3); letter-spacing: 0.06em; }
+
+.result-grade { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text2); margin-bottom: 14px; }
+.result-title { font-family: 'Playfair Display', serif; font-size: clamp(26px, 5vw, 38px); font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 14px; }
+.result-title em { font-style: italic; color: var(--accent); }
+.result-desc { font-size: 15px; color: var(--text2); max-width: 500px; margin: 0 auto 36px; line-height: 1.75; }
+
+/* BREAKDOWN */
+.breakdown { background: var(--panel); border: 1px solid var(--border); text-align: left; margin-bottom: 36px; }
+.breakdown-title { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text3); padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.bd-item { display: flex; align-items: center; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--border); }
+.bd-item:last-child { border-bottom: none; }
+.bd-label { font-size: 13px; color: var(--text2); flex: 1; }
+.bd-bar-wrap { width: 100px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.bd-bar { height: 100%; border-radius: 2px; background: var(--accent); transition: width 1s ease 0.4s; }
+.bd-score { font-size: 13px; font-weight: 600; color: var(--text); min-width: 36px; text-align: right; }
+
+/* RESULT CTA */
+.result-cta { display: block; background: var(--accent); color: #fff; text-decoration: none; padding: 18px 40px; font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.2s; margin-bottom: 12px; }
+.result-cta:hover { background: var(--accent2); transform: translateY(-2px); }
+.result-note { font-size: 12px; color: var(--text3); line-height: 1.6; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+@media (max-width: 500px) { .scale-btn { width: 32px; height: 32px; font-size: 12px; } .question { padding: 20px 16px; } .contact-section { padding: 24px 16px; } }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="header-eyebrow">Eurozoom · Angela Esquivel</div>
+    <h1 class="header-title">SME Growth<br><em>Scorecard</em></h1>
+    <p class="header-sub">10 questions. 3 minutes. Find out exactly where your business is losing revenue — and what to fix first.</p>
+    <div class="header-meta">
+      <span>10 questions</span>
+      <span>3 minutes</span>
+      <span>Free · No obligation</span>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label">
+      <span id="progressText">Question 1 of 10</span>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+  </div>
+
+  <div class="form-body" id="formBody">
+
+    <!-- LEAD GENERATION -->
+    <div class="form-section">
+      <div class="section-label"><div class="section-line"></div><div class="section-name">Lead Generation</div><div class="section-line"></div></div>
+
+      <div class="question" id="qw-1">
+        <div class="q-header"><div class="q-num">01</div><div class="q-text">We consistently attract new enquiries from people who have never heard of us before.</div></div>
+        <div class="scale" id="sc-1">
+          <button class="scale-btn" onclick="pick(1,1)">1</button><button class="scale-btn" onclick="pick(1,2)">2</button><button class="scale-btn" onclick="pick(1,3)">3</button><button class="scale-btn" onclick="pick(1,4)">4</button><button class="scale-btn" onclick="pick(1,5)">5</button><button class="scale-btn" onclick="pick(1,6)">6</button><button class="scale-btn" onclick="pick(1,7)">7</button><button class="scale-btn" onclick="pick(1,8)">8</button><button class="scale-btn" onclick="pick(1,9)">9</button><button class="scale-btn" onclick="pick(1,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+
+      <div class="question" id="qw-2">
+        <div class="q-header"><div class="q-num">02</div><div class="q-text">Our marketing generates predictable, measurable leads every week or month.</div></div>
+        <div class="scale" id="sc-2">
+          <button class="scale-btn" onclick="pick(2,1)">1</button><button class="scale-btn" onclick="pick(2,2)">2</button><button class="scale-btn" onclick="pick(2,3)">3</button><button class="scale-btn" onclick="pick(2,4)">4</button><button class="scale-btn" onclick="pick(2,5)">5</button><button class="scale-btn" onclick="pick(2,6)">6</button><button class="scale-btn" onclick="pick(2,7)">7</button><button class="scale-btn" onclick="pick(2,8)">8</button><button class="scale-btn" onclick="pick(2,9)">9</button><button class="scale-btn" onclick="pick(2,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+    </div>
+
+    <!-- SALES SYSTEM -->
+    <div class="form-section">
+      <div class="section-label"><div class="section-line"></div><div class="section-name">Sales System</div><div class="section-line"></div></div>
+
+      <div class="question" id="qw-3">
+        <div class="q-header"><div class="q-num">03</div><div class="q-text">We use a CRM to track every lead, follow-up, and deal — nothing falls through the cracks.</div></div>
+        <div class="scale" id="sc-3">
+          <button class="scale-btn" onclick="pick(3,1)">1</button><button class="scale-btn" onclick="pick(3,2)">2</button><button class="scale-btn" onclick="pick(3,3)">3</button><button class="scale-btn" onclick="pick(3,4)">4</button><button class="scale-btn" onclick="pick(3,5)">5</button><button class="scale-btn" onclick="pick(3,6)">6</button><button class="scale-btn" onclick="pick(3,7)">7</button><button class="scale-btn" onclick="pick(3,8)">8</button><button class="scale-btn" onclick="pick(3,9)">9</button><button class="scale-btn" onclick="pick(3,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+
+      <div class="question" id="qw-4">
+        <div class="q-header"><div class="q-num">04</div><div class="q-text">We follow up with leads at least 5–7 times before marking them as unresponsive.</div></div>
+        <div class="scale" id="sc-4">
+          <button class="scale-btn" onclick="pick(4,1)">1</button><button class="scale-btn" onclick="pick(4,2)">2</button><button class="scale-btn" onclick="pick(4,3)">3</button><button class="scale-btn" onclick="pick(4,4)">4</button><button class="scale-btn" onclick="pick(4,5)">5</button><button class="scale-btn" onclick="pick(4,6)">6</button><button class="scale-btn" onclick="pick(4,7)">7</button><button class="scale-btn" onclick="pick(4,8)">8</button><button class="scale-btn" onclick="pick(4,9)">9</button><button class="scale-btn" onclick="pick(4,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+    </div>
+
+    <!-- REVENUE ACTIVATION -->
+    <div class="form-section">
+      <div class="section-label"><div class="section-line"></div><div class="section-name">Revenue Activation</div><div class="section-line"></div></div>
+
+      <div class="question" id="qw-5">
+        <div class="q-header"><div class="q-num">05</div><div class="q-text">We actively contact past customers to generate repeat business — not just wait for them to return.</div></div>
+        <div class="scale" id="sc-5">
+          <button class="scale-btn" onclick="pick(5,1)">1</button><button class="scale-btn" onclick="pick(5,2)">2</button><button class="scale-btn" onclick="pick(5,3)">3</button><button class="scale-btn" onclick="pick(5,4)">4</button><button class="scale-btn" onclick="pick(5,5)">5</button><button class="scale-btn" onclick="pick(5,6)">6</button><button class="scale-btn" onclick="pick(5,7)">7</button><button class="scale-btn" onclick="pick(5,8)">8</button><button class="scale-btn" onclick="pick(5,9)">9</button><button class="scale-btn" onclick="pick(5,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+
+      <div class="question" id="qw-6">
+        <div class="q-header"><div class="q-num">06</div><div class="q-text">We know our conversion rate — and have a clear plan to improve it this quarter.</div></div>
+        <div class="scale" id="sc-6">
+          <button class="scale-btn" onclick="pick(6,1)">1</button><button class="scale-btn" onclick="pick(6,2)">2</button><button class="scale-btn" onclick="pick(6,3)">3</button><button class="scale-btn" onclick="pick(6,4)">4</button><button class="scale-btn" onclick="pick(6,5)">5</button><button class="scale-btn" onclick="pick(6,6)">6</button><button class="scale-btn" onclick="pick(6,7)">7</button><button class="scale-btn" onclick="pick(6,8)">8</button><button class="scale-btn" onclick="pick(6,9)">9</button><button class="scale-btn" onclick="pick(6,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+    </div>
+
+    <!-- OPERATIONS -->
+    <div class="form-section">
+      <div class="section-label"><div class="section-line"></div><div class="section-name">Operations & Growth Readiness</div><div class="section-line"></div></div>
+
+      <div class="question" id="qw-7">
+        <div class="q-header"><div class="q-num">07</div><div class="q-text">Our business runs reliably without the owner being involved in every decision or delivery.</div></div>
+        <div class="scale" id="sc-7">
+          <button class="scale-btn" onclick="pick(7,1)">1</button><button class="scale-btn" onclick="pick(7,2)">2</button><button class="scale-btn" onclick="pick(7,3)">3</button><button class="scale-btn" onclick="pick(7,4)">4</button><button class="scale-btn" onclick="pick(7,5)">5</button><button class="scale-btn" onclick="pick(7,6)">6</button><button class="scale-btn" onclick="pick(7,7)">7</button><button class="scale-btn" onclick="pick(7,8)">8</button><button class="scale-btn" onclick="pick(7,9)">9</button><button class="scale-btn" onclick="pick(7,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+
+      <div class="question" id="qw-8">
+        <div class="q-header"><div class="q-num">08</div><div class="q-text">We use automation or AI in our sales or marketing process to save time and reduce manual work.</div></div>
+        <div class="scale" id="sc-8">
+          <button class="scale-btn" onclick="pick(8,1)">1</button><button class="scale-btn" onclick="pick(8,2)">2</button><button class="scale-btn" onclick="pick(8,3)">3</button><button class="scale-btn" onclick="pick(8,4)">4</button><button class="scale-btn" onclick="pick(8,5)">5</button><button class="scale-btn" onclick="pick(8,6)">6</button><button class="scale-btn" onclick="pick(8,7)">7</button><button class="scale-btn" onclick="pick(8,8)">8</button><button class="scale-btn" onclick="pick(8,9)">9</button><button class="scale-btn" onclick="pick(8,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+
+      <div class="question" id="qw-9">
+        <div class="q-header"><div class="q-num">09</div><div class="q-text">We have a clear, documented offer — and our pricing reflects the real value we deliver.</div></div>
+        <div class="scale" id="sc-9">
+          <button class="scale-btn" onclick="pick(9,1)">1</button><button class="scale-btn" onclick="pick(9,2)">2</button><button class="scale-btn" onclick="pick(9,3)">3</button><button class="scale-btn" onclick="pick(9,4)">4</button><button class="scale-btn" onclick="pick(9,5)">5</button><button class="scale-btn" onclick="pick(9,6)">6</button><button class="scale-btn" onclick="pick(9,7)">7</button><button class="scale-btn" onclick="pick(9,8)">8</button><button class="scale-btn" onclick="pick(9,9)">9</button><button class="scale-btn" onclick="pick(9,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+
+      <div class="question" id="qw-10">
+        <div class="q-header"><div class="q-num">10</div><div class="q-text">We are ready to implement new systems right now — we have the time and openness to change.</div></div>
+        <div class="scale" id="sc-10">
+          <button class="scale-btn" onclick="pick(10,1)">1</button><button class="scale-btn" onclick="pick(10,2)">2</button><button class="scale-btn" onclick="pick(10,3)">3</button><button class="scale-btn" onclick="pick(10,4)">4</button><button class="scale-btn" onclick="pick(10,5)">5</button><button class="scale-btn" onclick="pick(10,6)">6</button><button class="scale-btn" onclick="pick(10,7)">7</button><button class="scale-btn" onclick="pick(10,8)">8</button><button class="scale-btn" onclick="pick(10,9)">9</button><button class="scale-btn" onclick="pick(10,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Not at all true</span><span>Completely true</span></div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="contact-section">
+      <div class="contact-title">Almost there.</div>
+      <div class="contact-sub">Enter your details to receive your personalised score and growth recommendations. Angela reviews every submission personally.</div>
+      <div class="field"><label class="field-label" for="fn">Your name</label><input type="text" id="fn" placeholder="e.g. João Silva" autocomplete="name"></div>
+      <div class="field"><label class="field-label" for="fc">Company name</label><input type="text" id="fc" placeholder="e.g. Silva & Associados" autocomplete="organization"></div>
+      <div class="field"><label class="field-label" for="fe">Email address</label><input type="email" id="fe" placeholder="e.g. joao@company.com" autocomplete="email"></div>
+      <button class="submit-btn" onclick="submitForm()">Get My Score →</button>
+      <div class="submit-note">Your score is calculated instantly. Angela will follow up within 24 hours with personalised recommendations.</div>
+    </div>
+
+  </div><!-- /form-body -->
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="score-ring-wrap">
+      <svg class="score-ring" viewBox="0 0 160 160">
+        <circle class="score-ring-bg" cx="80" cy="80" r="70"/>
+        <circle class="score-ring-fill" id="ringFill" cx="80" cy="80" r="70"/>
+      </svg>
+      <div class="score-center">
+        <div class="score-val" id="scoreNum">0</div>
+        <div class="score-total">/ 100</div>
+      </div>
+    </div>
+    <div class="result-grade" id="rGrade"></div>
+    <h2 class="result-title" id="rTitle"></h2>
+    <p class="result-desc" id="rDesc"></p>
+    <div class="breakdown">
+      <div class="breakdown-title">Score by Category</div>
+      <div class="bd-item"><div class="bd-label">Lead Generation</div><div class="bd-bar-wrap"><div class="bd-bar" id="bLG" style="width:0%"></div></div><div class="bd-score" id="sLG">—</div></div>
+      <div class="bd-item"><div class="bd-label">Sales System</div><div class="bd-bar-wrap"><div class="bd-bar" id="bSS" style="width:0%"></div></div><div class="bd-score" id="sSS">—</div></div>
+      <div class="bd-item"><div class="bd-label">Revenue Activation</div><div class="bd-bar-wrap"><div class="bd-bar" id="bRA" style="width:0%"></div></div><div class="bd-score" id="sRA">—</div></div>
+      <div class="bd-item"><div class="bd-label">Operations & Growth</div><div class="bd-bar-wrap"><div class="bd-bar" id="bOP" style="width:0%"></div></div><div class="bd-score" id="sOP">—</div></div>
+    </div>
+    <a href="https://calendly.com/angelaesquivelmunoz/free-revenue-audit-30-min" class="result-cta">Book Your Free Revenue Audit →</a>
+    <div class="result-note" id="rNote"></div>
+  </div>
+
+</div>
+
+<script>
+const sc = {}, total = 10;
+let answered = 0;
+
+function pick(q, v) {
+  const fresh = sc[q] === undefined;
+  sc[q] = v;
+  document.querySelectorAll(`#sc-${q} .scale-btn`).forEach((b,i) => b.classList.toggle('selected', i+1===v));
+  document.getElementById(`qw-${q}`).classList.add('answered');
+  if (fresh) { answered++; updateProgress(); }
+}
+
+function updateProgress() {
+  const p = Math.round((answered/total)*100);
+  document.getElementById('progressFill').style.width = p+'%';
+  document.getElementById('progressPct').textContent = p+'%';
+  const rem = total - answered;
+  document.getElementById('progressText').textContent =
+    answered===total ? 'All questions answered ✓' :
+    answered===0 ? 'Question 1 of 10' :
+    rem+' question'+(rem===1?'':'s')+' remaining';
+}
+
+function submitForm() {
+  for (let i=1; i<=10; i++) {
+    if (sc[i]===undefined) {
+      const el = document.getElementById(`qw-${i}`);
+      el.style.borderColor='var(--accent)';
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(()=>{ el.style.borderColor=''; },2000);
+      return;
+    }
+  }
+  const name = document.getElementById('fn').value.trim();
+  const email = document.getElementById('fe').value.trim();
+  if (!name) { document.getElementById('fn').focus(); return; }
+  if (!email||!email.includes('@')) { document.getElementById('fe').focus(); return; }
+  showResults(name);
+}
+
+function showResults(name) {
+  const tot = Object.values(sc).reduce((a,b)=>a+b,0);
+  const pct = Math.round((tot/100)*100);
+  const lg = sc[1]+sc[2], ss = sc[3]+sc[4], ra = sc[5]+sc[6], op = sc[7]+sc[8]+sc[9]+sc[10];
+
+  document.getElementById('formBody').classList.add('hidden');
+  const res = document.getElementById('results');
+  res.classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // Animate number
+  const start = performance.now();
+  (function step(now) {
+    const p = Math.min((now-start)/1200,1), e=1-Math.pow(1-p,3);
+    document.getElementById('scoreNum').textContent = Math.round(pct*e);
+    if(p<1) requestAnimationFrame(step);
+  })(start);
+
+  // Ring
+  const color = pct>=70?'var(--green)':pct>=40?'var(--amber)':'var(--accent)';
+  setTimeout(()=>{
+    document.getElementById('ringFill').style.strokeDashoffset = 440 - (pct/100)*440;
+    document.getElementById('ringFill').style.stroke = color;
+  },100);
+
+  // Messaging
+  const first = name.split(' ')[0];
+  let grade, title, desc, note;
+  if(pct>=70){
+    grade='Strong Foundation';
+    title=`${first}, you\'re close.<br>Let\'s <em>optimise</em> what\'s working.`;
+    desc=`Your business has solid systems in place. The opportunity now is to find the specific gaps limiting your next growth stage — and engineer the missing piece that unlocks the next revenue level.`;
+    note=`Book a Revenue Audit to identify your highest-leverage growth moves.`;
+  } else if(pct>=40){
+    grade='Revenue Being Left Behind';
+    title=`${first}, there\'s real money<br>sitting <em>uncaptured</em>.`;
+    desc=`Your business is working — but your systems aren\'t. You\'re likely losing revenue every month from unconverted leads, poor follow-up, and dormant customers. The fix is a structured system, not more marketing.`;
+    note=`Book a Revenue Audit. I\'ll show you exactly what\'s leaking and how to fix it in 30 days.`;
+  } else {
+    grade='Urgent Revenue Gap';
+    title=`${first}, your business needs<br>a <em>system</em> — not more leads.`;
+    desc=`The foundations of a revenue machine are missing. More marketing won\'t fix this — it will make it worse. Before spending another euro on ads or content, let\'s build the system that actually converts.`;
+    note=`Book a free Revenue Audit this week. This is fixable — faster than you think.`;
+  }
+
+  document.getElementById('rGrade').textContent = grade;
+  document.getElementById('rTitle').innerHTML = title;
+  document.getElementById('rDesc').textContent = desc;
+  document.getElementById('rNote').textContent = note;
+
+  // Category bars
+  setTimeout(()=>{
+    const cats = [['LG',lg,20],['SS',ss,20],['RA',ra,20],['OP',op,40]];
+    cats.forEach(([k,v,max])=>{
+      const p = Math.round((v/max)*100);
+      const bar = document.getElementById('b'+k);
+      bar.style.width = p+'%';
+      bar.style.background = p>=70?'var(--green)':p>=40?'var(--amber)':'var(--accent)';
+      document.getElementById('s'+k).textContent = v+'/'+max;
+    });
+  },400);
+}
+</script>
+</body>
+</html>

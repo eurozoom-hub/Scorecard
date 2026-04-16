@@ -309,11 +309,38 @@ function submitForm() {
       return;
     }
   }
+
   const name = document.getElementById('fn').value.trim();
   const email = document.getElementById('fe').value.trim();
+  const company = document.getElementById('fc').value.trim();
+
   if (!name) { document.getElementById('fn').focus(); return; }
-  if (!email||!email.includes('@')) { document.getElementById('fe').focus(); return; }
-  showResults(name);
+  if (!email || !email.includes('@')) { document.getElementById('fe').focus(); return; }
+
+  // 👉 Calculate score
+  const totalScore = Object.values(sc).reduce((a,b)=>a+b,0);
+  const percentage = Math.round((totalScore/100)*100);
+
+  // 👉 Send to Formspree
+  fetch("https://formspree.io/f/xbdqgrwb", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      email: email,
+      company: company,
+      score: percentage,
+      answers: sc
+    })
+  })
+  .then(() => {
+    showResults(name);
+  })
+  .catch(() => {
+    showResults(name);
+  });
 }
 
 function showResults(name) {
